@@ -1,0 +1,38 @@
+var http = require('http');
+var PassThrough = require('stream').PassThrough;
+var freeport = require('freeport');
+var ngrok = require('ngrok');
+
+
+freeport(function (err, port) {
+  if (err) {
+    console.log(err.message);
+    return process.exit(1);
+  }
+
+  process.stdin.resume();
+  process.stdin.setEncoding('utf8');
+
+  http.createServer(function (req, res) {
+    var stream = new PassThrough();
+    process.stdin.pipe(stream);
+
+    res.writeHead(200, {
+      'Content-Type': 'text/plain',
+      'Transfer-Encoding': 'chunked'
+    });
+
+    stream.pipe(res);
+
+  }).listen(port, function (err) {
+    if (err) {
+      console.log(err.message);
+      return process.exit(1);
+    }
+    ngrok.connect(port, function (err, url) {
+      console.log(url);
+    });
+  });
+
+});
+
