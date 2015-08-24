@@ -2,12 +2,11 @@
   "name": "pshare",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "bin": "bin/pshare",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Jose F. Romaniello <jfromaniello@gmail.com> (http://joseoncode.com)",
+  "license": "MIT",
   "dependencies": {
     "freeport": "~1.0.5",
     "ngrok": "~0.1.99"
