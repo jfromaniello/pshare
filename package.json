@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "bin": "bin/pshare",
-  "scripts": {
-  },
+  "scripts": {},
   "author": "Jose F. Romaniello <jfromaniello@gmail.com> (http://joseoncode.com)",
   "license": "MIT",
   "dependencies": {
+    "cb": "~0.1.0",
+    "colors": "~1.1.2",
     "freeport": "~1.0.5",
     "ngrok": "~0.1.99"
   }

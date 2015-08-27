@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 
-var http = require('http');
+var http        = require('http');
 var PassThrough = require('stream').PassThrough;
-var freeport = require('freeport');
-var ngrok = require('ngrok');
+var freeport    = require('freeport');
+var ngrok       = require('ngrok');
+var cb          = require('cb');
+var colors      = require('colors/safe');
 
 
 freeport(function (err, port) {
@@ -16,24 +18,40 @@ freeport(function (err, port) {
   process.stdin.setEncoding('utf8');
 
   http.createServer(function (req, res) {
-    var stream = new PassThrough();
-    process.stdin.pipe(stream);
+
+    var client_ip = req.headers['x-real-ip'];
+
+    console.log('Conection opened from:', colors.green(client_ip));
 
     res.writeHead(200, {
       'Content-Type': 'text/plain',
       'Transfer-Encoding': 'chunked'
     });
 
-    stream.pipe(res);
+    req.on('close', function () {
+      console.log('Connection closed from:', colors.green(client_ip));
+    });
+
+    process.stdin.pipe(res);
 
   }).listen(port, function (err) {
     if (err) {
       console.log(err.message);
       return process.exit(1);
     }
-    ngrok.connect(port, function (err, url) {
+
+    ngrok.connect(port, cb(function (err, url) {
+      if (err && err instanceof cb.TimeoutError) {
+        console.error ('Timeout creating the tunnel with ngrok.');
+        return process.exit(1);
+      }
+      if (err) {
+        console.error(err.message);
+        return process.exit(1);
+      }
       console.log(url);
-    });
+    }).timeout(10 * 1000));
+
   });
 
 });
